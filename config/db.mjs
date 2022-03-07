@@ -26,26 +26,24 @@ class DbService {
         return instance ? instance : new DbService();
     }
 
-    async getCategoryData(query, filter) {
+    async getData(query, filter, callback = () => { }) {
         try {
             const params = filter ? filter : null;
-            const response = await new Promise((resolve, reject) => {
-
-                connection.query(query, params, (err, results) => {
-                    if (err) {
-                        reject(new Error(err.message));
+            const response = await new Promise((resolve, reject, cb) => {
+                const queryStmt = connection.query(query, params, (error, results, callback) => {
+                    if (error) {
+                        reject(error);
                     }
                     resolve(results);
                 })
             });
-            console.log(response);
+            console.log('success', response);
             return response;
         } catch (error) {
-            console.log(error);
+            console.log('error', error);
+            throw new Error(`${error.code} ${error.message}`);
         }
     }
 }
-
-
 
 export default DbService;
