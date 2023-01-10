@@ -140,7 +140,7 @@ export const getProductsPerCategory = async (req, res, next) => {
     const { id } = req.params;
     const db = DbService.getDbServiceInstance();
     const whereById = isString(id) ? 'category.url_key = ?' : 'category.id = ?';
-    const query = `SELECT product.id, product.sku, product.title, product.description, product.image,
+    const query = `SELECT product.id, product.url_key, product.sku, product.title, product.description, product.image,
             price.id as priceKey, price.title as priceTitle, price.description as priceDescr, 
             price.image as priceImage, price.price, price.size, price.units, price.coverage, price.coverage_value 
         FROM product 
@@ -162,6 +162,7 @@ export const getProductsPerCategory = async (req, res, next) => {
                 if (index === 0 || prod.id !== prodArray[index - 1].id) {
                     productObject = {
                         id: prod.id,
+                        url_key: prod.url_key,
                         sku: prod.sku,
                         title: prod.title,
                         description: prod.description,

@@ -6,17 +6,22 @@ import { response } from 'express';
 export const getProduct = async (req, res, next) => {
     const { categoryId, id } = req.params;
     const db = DbService.getDbServiceInstance();
-    let lookupKey = 'category.id';
+    let categoryLookupKey = 'category.id';
+    let productLookupKey = 'product.id';
     if (isString(categoryId)) {
-        lookupKey = 'category.url_key';
+        categoryLookupKey = 'category.url_key';
     }
-    const query = `SELECT category.id as categoryId, category.url_key as category_url_key, category.title as categoryTitle,  product.id, product.url_key, product.sku, product.title, product.description, product.image, product.image_lens_size, product.extended,
+    if (isString(id)) {
+        productLookupKey = 'product.url_key';
+    }
+    const query = `SELECT category.id as categoryId, category.url_key as category_url_key, category.title as categoryTitle,  
+        product.id, product.url_key, product.sku, product.title, product.description, product.image, product.image_lens_size, product.extended,
         price.id as priceKey, price.sku as priceSku, price.title as priceTitle, price.description as priceDescr, price.image as priceImage, price.price, price.size, price.units, price.coverage, price.coverage_value, price.online_minimum 
         FROM product 
         JOIN price ON price.product = product.id   
         JOIN product_category ON product_category.product = product.id
         JOIN category ON product_category.category = category.id
-        WHERE ${lookupKey} = ? and product.id = ?`
+        WHERE ${categoryLookupKey} = ? and ${productLookupKey} = ?`
 
     console.log('Category:', categoryId, 'Product:', id);
     const result = db.getData(query, [categoryId, id]);
